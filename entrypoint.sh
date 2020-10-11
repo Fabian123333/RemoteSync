@@ -2,16 +2,19 @@
 
 echo "starting backup tool"
 
-#echo $SMB_SRC | tr ":" "\n" | while read line; do
-#	echo "mount $line";
-#	path=$(echo $line | sed 's/\/\/.*\///g')
-#	mkdir -p /backup/cifs/$path
-#	mount -t cifs -o auto,username=${SMB_SRC_USER},password=${SMB_SRC_PASS},ro $line /backup/cifs/$path
-#done
+ARGS="--delete --update --size-only --chmod=ugo=rwx"
+
+if [ ! -z "$BWLIMIT" ]; then
+	ARGS="$ARGS --bwlimit=$BWLIMIT"
+fi
+
+if [ -z "$VERBOSE" ]; then
+	ARGS="$ARGS -Pv"
+fi
 
 while true; do
 	echo "start sync"
-
+	rsync -tr $ARGS /backup/src/ /backup/dst/
 	echo "finish sync, sleep $INTERVAL"
 	sleep $INTERVAL
 done

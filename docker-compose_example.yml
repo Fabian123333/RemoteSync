@@ -1,0 +1,52 @@
+version: '3.3'
+
+services:
+  backup:
+    image: fabian1233/remotesync
+    environment:
+        INTERVAL: 3600
+        BWLIMIT: "7000"
+        VERBOSE: "true"
+    deploy:           
+      resources:      
+        reservations: 
+          cpus: '0.1'
+          memory: 4M
+    volumes:
+      - type: volume
+        source: nfs
+        target: /backup/src/nfs
+      - type: volume
+        source: nas-data
+        target: /backup/src/nas
+      - type: volume
+        source: nas-backup
+        target: /backup/src/backup
+      - type: volume
+        source: storagebox
+        target: /backup/dst
+volumes:
+  nfs:
+    driver: local
+    driver_opts:
+      o: bind,ro
+      type: none
+      device: /nfsdata/
+  nas-data:
+    driver: local
+    driver_opts:
+      type: cifs
+      device: "//192.168.1.10/nas"         
+      o: username=Fabian,password=12345
+  nas-backup:
+    driver: local
+    driver_opts:                                    
+      type: cifs                                    
+      device: "//192.168.1.10/backup"
+      o: username=Backup,password=12345
+  storagebox:                                       
+    driver: local                                   
+    driver_opts:                                    
+      type: cifs                                    
+      device: //159.69.63.10/backup"             
+      o: username=u1234567,password=secret_password
