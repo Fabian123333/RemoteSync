@@ -11,5 +11,7 @@ echo "starting backup tool"
 
 while true; do
 	echo "start sync"
+
+	echo "finish sync, sleep $INTERVAL"
 	sleep $INTERVAL
 done
